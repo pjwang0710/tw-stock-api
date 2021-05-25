@@ -291,7 +291,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Earnings (Monthly)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="apiCount"></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -392,7 +392,10 @@
     <script src="{% static 'others/js/chart-area-demo.js' %}"></script>
     <!-- Custom scripts for all pages-->
     <script src="{% static 'others/js/sb-admin-2.js' %}"></script>
-
+    <script src="{% static 'others/js/dashboard.js' %}"></script>
+    <script>
+        get_tw_stock_info("1")
+    </script>
 </body>
 
 </html>
