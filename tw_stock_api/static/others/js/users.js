@@ -1,7 +1,7 @@
 var register = (data, redirect_url) => {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8000/users/insert_user/",
+        url: "http://localhost:8001/users/insert_user/",
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify(data),
@@ -21,7 +21,7 @@ var register = (data, redirect_url) => {
 var get_users = () => {
     $.ajax({
         type: "GET",
-        url: "http://localhost:8000/users/get_users/",
+        url: "http://localhost:8001/users/get_users/",
         contentType: "application/json",
         success: function (returnData) {
             console.log(returnData);
@@ -36,7 +36,7 @@ var get_users = () => {
 var get_user_detail = (user_id) => {
     $.ajax({
         type: "GET",
-        url: "http://localhost:8000/users/get_user_detail/"+user_id,
+        url: "http://localhost:8001/users/get_user_detail/"+user_id,
         contentType: "application/json",
         success: function (data) {
             console.log(data);
@@ -53,7 +53,7 @@ var get_user_detail = (user_id) => {
 var update_user = (data, user_id) => {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8000/users/update_user/"+user_id,
+        url: "http://localhost:8001/users/update_user/"+user_id,
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify(data),
@@ -71,7 +71,7 @@ var update_user = (data, user_id) => {
 var login = (data, redirect_url) => {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8000/users/login/",
+        url: "http://localhost:8001/users/login/",
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify(data),
@@ -89,7 +89,7 @@ var login = (data, redirect_url) => {
 var update_secret_key = (user_id) => {
     $.ajax({
         type: "POST",
-        url: "http://localhost:8000/users/update_secret_key/"+user_id,
+        url: "http://localhost:8001/users/update_secret_key/"+user_id,
         contentType: "application/json",
         success: function (returnData) {
             console.log(returnData);
@@ -106,7 +106,7 @@ var update_secret_key = (user_id) => {
 var get_secret_key = (user_id) => {
     $.ajax({
         type: "GET",
-        url: "http://localhost:8000/users/get_secret_key/"+user_id,
+        url: "http://localhost:8001/users/get_secret_key/"+user_id,
         contentType: "application/json",
         success: function (data) {
             console.log(data);
