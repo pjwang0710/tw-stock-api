@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSerializer
-from .models import Users
+from .serializers import UserSerializer, UserSecretKeySerializer
+from .models import Users, UserSecretKeys
+import uuid
+import datetime
 
 
 @api_view(['GET'])
@@ -66,3 +66,43 @@ def delete_user(request, pk):
     user = Users.objects.get(id=pk)
     user.delete()
     return Response('Delete successfully!')
+
+
+@api_view(['GET'])
+def get_secret_key_detail(request, pk):
+    obj = UserSecretKeys.objects.all().filter(user_id=pk, is_valid=1)
+    if obj:
+        serializer = UserSecretKeySerializer(obj, many=True)
+        return Response(serializer.data)
+    return Response({'status': 'failed'})
+
+
+@api_view(['POST'])
+def update_user_secret(request, pk):
+    user = Users.objects.get(id=pk)
+    if user:
+        secret_keys = UserSecretKeys.objects.all().filter(user_id=pk)
+        instances = []
+        for obj in secret_keys:
+            obj.is_valid = False
+            obj.save()
+            instances.append(obj)
+        serializer = UserSecretKeySerializer(instances, many=True)
+
+        now = datetime.datetime.utcnow()
+        data = {
+            'user': pk,
+            'secret_key': str(uuid.uuid4()).replace('-', ''),
+            'created_at': now,
+            'year': now.year,
+            'month': now.month,
+            'count': 0,
+            'is_valid': True,
+            'is_charged': False
+        }
+        serializer = UserSecretKeySerializer(data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
+    else:
+        return Response({'status': 'failed'})
