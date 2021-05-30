@@ -319,7 +319,6 @@ class CMoneyStockInfo(models.Model):
 
 class CMoneyStockRevenueSurplus(models.Model):
     CMKey = models.CharField(max_length=50, primary_key=True)
-    # CMKey = models.ForeignKey(CMoneyStockInfo, db_column='CMKey', related_name='RevenueSurplus', on_delete=models.DO_NOTHING, primary_key=True)
     AccumulatedConsolidatedRevenue = models.CharField(max_length=50)
     AccumulatedConsolidatedRevenueGrowth = models.CharField(max_length=50)
     AccumulatedConsolidatedRevenueM = models.CharField(max_length=50)
@@ -338,7 +337,6 @@ class CMoneyStockRevenueSurplus(models.Model):
     MonthlyRevenueM = models.CharField(max_length=50)
     MonthlyRevenueMonthlyChange = models.CharField(max_length=50)
     MonthlyRevenueYearGrowth = models.CharField(max_length=50)
-    # StockInfo = models.ForeignKey(CMoneyStockInfo, db_column='StockInfo', related_name='RevenueSurplus', on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = 'CMoneyStockRevenueSurplus'
@@ -364,8 +362,8 @@ class CMoneyTraderSum(models.Model):
         return self.CMKey
 
 
-class CMoneyCMoneyKImage(models.Model):
-    CMKey = models.CharField(max_length=50)
+class CMoneyKImage(models.Model):
+    CMKey = models.CharField(max_length=50, primary_key=True)
     Date = models.CharField(max_length=50)
     OpenPrice = models.FloatField()
     HighPrice = models.FloatField()
@@ -378,7 +376,7 @@ class CMoneyCMoneyKImage(models.Model):
     CLimit = models.IntegerField()
 
     class Meta:
-        db_table = 'CMoneyCMoneyKImage'
+        db_table = 'CMoneyKImage'
         unique_together = (('CMKey', 'Date'),)
 
     def __str__(self):

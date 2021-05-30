@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import TaiwanStockInfoSerializer, TaiwanStockBalanceSheetSerializer, TaiwanStockCashFlowsStatementSerializer, TaiwanStockFinancialStatementsSerializer, TaiwanStockMonthRevenueSerializer, TaiwanStockPERSerializer, TaiwanStockPriceSerializer, CMoneyBalanceSheetSerializer, CMoneyCashFlowStatementSerializer, CMoneyFinancialRatiosSerializer, CMoneyIncomeStatementSerializer, CMoneyPERAndPBRSerializer, CMoneyReinvestmentSerializer, CMoneyStockBasicInfoSerializer, CMoneyStockInfoSerializer, CMoneyStockRevenueSurplusSerializer, CMoneyTraderSumSerializer, CMoneyCMoneyKImageSerializer
-from .models import TaiwanStockInfo, TaiwanStockBalanceSheet, TaiwanStockCashFlowsStatement, TaiwanStockFinancialStatements, TaiwanStockMonthRevenue, TaiwanStockPER, TaiwanStockPrice, CMoneyBalanceSheet, CMoneyCashFlowStatement, CMoneyFinancialRatios, CMoneyIncomeStatement, CMoneyPERAndPBR, CMoneyReinvestment, CMoneyStockBasicInfo, CMoneyStockInfo, CMoneyStockRevenueSurplus, CMoneyTraderSum, CMoneyCMoneyKImage
+from .serializers import TaiwanStockInfoSerializer, TaiwanStockBalanceSheetSerializer, TaiwanStockCashFlowsStatementSerializer, TaiwanStockFinancialStatementsSerializer, TaiwanStockMonthRevenueSerializer, TaiwanStockPERSerializer, TaiwanStockPriceSerializer, CMoneyBalanceSheetSerializer, CMoneyCashFlowStatementSerializer, CMoneyFinancialRatiosSerializer, CMoneyIncomeStatementSerializer, CMoneyPERAndPBRSerializer, CMoneyReinvestmentSerializer, CMoneyStockBasicInfoSerializer, CMoneyStockInfoSerializer, CMoneyStockRevenueSurplusSerializer, CMoneyTraderSumSerializer, CMoneyKImageSerializer
+from .models import TaiwanStockInfo, TaiwanStockBalanceSheet, TaiwanStockCashFlowsStatement, TaiwanStockFinancialStatements, TaiwanStockMonthRevenue, TaiwanStockPER, TaiwanStockPrice, CMoneyBalanceSheet, CMoneyCashFlowStatement, CMoneyFinancialRatios, CMoneyIncomeStatement, CMoneyPERAndPBR, CMoneyReinvestment, CMoneyStockBasicInfo, CMoneyStockInfo, CMoneyStockRevenueSurplus, CMoneyTraderSum, CMoneyKImage
 from users.models import UserSecretKeys
 from users.serializers import UserSecretKeySerializer
 from drf_yasg.utils import swagger_auto_schema
@@ -31,23 +31,12 @@ class StocksInfos():
         if date:
             stock_info = obj.objects.filter(CMKey=cmkey, Date__gte=date)
         elif date_range:
-            stock_info = obj.objects.filter(CMKey=cmkey, DateRange__gte=date)
+            stock_info = obj.objects.filter(CMKey=cmkey, DateRange__gte=date_range)
         elif date_season:
-            stock_info = obj.objects.filter(CMKey=cmkey, SeasonDate__gte=date)
+            stock_info = obj.objects.filter(CMKey=cmkey, SeasonDate__gte=date_season)
         else:
-            sql = """
-                SELECT * FROM CMoneyStockInfo AS stock_info
-                JOIN (SELECT * FROM CMoneyStockRevenueSurplus
-                    WHERE CMKey = %s ORDER BY Date DESC
-                    LIMIT 1) AS revenue_surplus ON stock_info.CMKey = revenue_surplus.CMKey
-                WHERE stock_info.CMKey = %s """
-            # stock_info = obj.objects.select_related().filter(CMKey=cmkey)
-            stock_info = obj.objects.raw(sql, (cmkey, cmkey))
-        # for obj in stock_info:
-        #     print(obj.CMKey, obj.CMName, obj.revenue_surplus)
-
+            stock_info = obj.objects.filter(CMKey=cmkey)
         serialiers = serializer(stock_info, many=True)
-        print(serialiers.data)
         return serialiers.data
 
 
@@ -179,6 +168,7 @@ def get_cmoney_balance_sheet(request):
     cmkey = request.data['cmkey']
     secret_key = request.data['secret_key']
     date = request.data['start_date']
+    print(cmkey, secret_key, date)
     is_successful = stock_infos.add_api_used_count(secret_key)
     if is_successful:
         data = stock_infos.get_api_info_cmoney(CMoneyBalanceSheet, CMoneyBalanceSheetSerializer, cmkey=cmkey, date_range=date)
@@ -192,6 +182,7 @@ def get_cmoney_cash_flow_statement(request):
     cmkey = request.data['cmkey']
     secret_key = request.data['secret_key']
     date = request.data['start_date']
+    print(cmkey, date, secret_key)
     is_successful = stock_infos.add_api_used_count(secret_key)
     if is_successful:
         data = stock_infos.get_api_info_cmoney(CMoneyCashFlowStatement, CMoneyCashFlowStatementSerializer, cmkey=cmkey, date_range=date)
@@ -256,10 +247,9 @@ def get_cmoney_reinvestment(request):
 def get_cmoney_stock_basic_info(request):
     cmkey = request.data['cmkey']
     secret_key = request.data['secret_key']
-    date = request.data['start_date']
     is_successful = stock_infos.add_api_used_count(secret_key)
     if is_successful:
-        data = stock_infos.get_api_info_cmoney(CMoneyStockBasicInfo, CMoneyStockBasicInfoSerializer, cmkey=cmkey, date_range=date)
+        data = stock_infos.get_api_info_cmoney(CMoneyStockBasicInfo, CMoneyStockBasicInfoSerializer, cmkey=cmkey)
         return Response(data)
     return Response({'secret key failed'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -284,7 +274,7 @@ def get_cmoney_stock_revenue_surplus(request):
     date = request.data['start_date']
     is_successful = stock_infos.add_api_used_count(secret_key)
     if is_successful:
-        data = stock_infos.get_api_info_cmoney(CMoneyStockRevenueSurplus, CMoneyStockRevenueSurplusSerializer, cmkey=cmkey, date_range=date)
+        data = stock_infos.get_api_info_cmoney(CMoneyStockRevenueSurplus, CMoneyStockRevenueSurplusSerializer, cmkey=cmkey, date=date)
         return Response(data)
     return Response({'secret key failed'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -312,6 +302,6 @@ def get_cmoney_k_image(request):
     date = date.replace('-', '')
     is_successful = stock_infos.add_api_used_count(secret_key)
     if is_successful:
-        data = stock_infos.get_api_info_cmoney(CMoneyCMoneyKImage, CMoneyCMoneyKImageSerializer, cmkey=cmkey, date=date)
+        data = stock_infos.get_api_info_cmoney(CMoneyKImage, CMoneyKImageSerializer, cmkey=cmkey, date=date)
         return Response(data)
     return Response({'secret key failed'}, status=status.HTTP_400_BAD_REQUEST)

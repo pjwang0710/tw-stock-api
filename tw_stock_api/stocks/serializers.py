@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TaiwanStockInfo, TaiwanStockBalanceSheet, TaiwanStockCashFlowsStatement, TaiwanStockFinancialStatements, TaiwanStockMonthRevenue, TaiwanStockPER, TaiwanStockPrice, CMoneyBalanceSheet, CMoneyCashFlowStatement, CMoneyFinancialRatios, CMoneyIncomeStatement, CMoneyPERAndPBR, CMoneyReinvestment, CMoneyStockBasicInfo, CMoneyStockInfo, CMoneyStockRevenueSurplus, CMoneyTraderSum, CMoneyCMoneyKImage
+from .models import TaiwanStockInfo, TaiwanStockBalanceSheet, TaiwanStockCashFlowsStatement, TaiwanStockFinancialStatements, TaiwanStockMonthRevenue, TaiwanStockPER, TaiwanStockPrice, CMoneyBalanceSheet, CMoneyCashFlowStatement, CMoneyFinancialRatios, CMoneyIncomeStatement, CMoneyPERAndPBR, CMoneyReinvestment, CMoneyStockBasicInfo, CMoneyStockInfo, CMoneyStockRevenueSurplus, CMoneyTraderSum, CMoneyKImage
 
 
 class TaiwanStockInfoSerializer(serializers.ModelSerializer):
@@ -107,7 +107,7 @@ class CMoneyTraderSumSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CMoneyCMoneyKImageSerializer(serializers.ModelSerializer):
+class CMoneyKImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CMoneyCMoneyKImage
+        model = CMoneyKImage
         fields = '__all__'
