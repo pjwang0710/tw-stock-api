@@ -5,6 +5,8 @@ from .serializers import UserSerializer, UserSecretKeySerializer
 from .models import Users, UserSecretKeys
 import uuid
 import datetime
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 @api_view(['GET'])
@@ -29,6 +31,13 @@ def get_user_detail(request, pk):
     return Response(serializer.data)
 
 
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'email': openapi.Schema(type=openapi.TYPE_STRING, description='123@123'),
+        'hashed_password': openapi.Schema(type=openapi.TYPE_STRING, description='123'),
+    }
+))
 @api_view(['POST'])
 def login(request):
     user = Users.objects.filter(email=request.data.get('email'), hashed_password=request.data.get('hashed_password'))
@@ -38,6 +47,20 @@ def login(request):
     return Response({'failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method='post',
+                     responses={
+                         '200': openapi.Response('response description', UserSerializer)
+                     },
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'email': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL, description='email'),
+                             'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='first name'),
+                             'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='last name'),
+                             'hashed_password': openapi.Schema(type=openapi.TYPE_STRING, description='hashed_password'),
+                         }
+                     )
+                    )
 @api_view(['POST'])
 def insert_user(request):
     user = Users.objects.filter(email=request.data.get('email'))

@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'stocks.apps.StocksConfig',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -101,6 +102,9 @@ DATABASES = {
         'PASSWORD': '#%Rfb_7)Y<6k3-TP"TY?e6Dv:J6K[;,X',
         'HOST': '18.181.48.71',
         'PORT': '3306',
+        # 'OPTIONS':{
+        #     "init_command": "SET foreign_key_checks = 0;"
+        # }
     }
 }
 
@@ -157,3 +161,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_MODEL_RENDERING': 'example'
+}
+
