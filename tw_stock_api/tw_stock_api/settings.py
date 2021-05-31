@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
+load_dotenv('.env')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -94,14 +96,12 @@ WSGI_APPLICATION = 'tw_stock_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stock_api_warehouse',
-        'USER': 'pj',
-        'PASSWORD': '#%Rfb_7)Y<6k3-TP"TY?e6Dv:J6K[;,X',
-        'HOST': '18.181.48.71',
-        'PORT': '3306',
+        'NAME': os.getenv('MYSQL_DB_NAME'),
+        'USER': os.getenv('MYSQL_DB_USER'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+        'HOST': os.getenv('MYSQL_HOST'),
+        'PORT': os.getenv('MYSQL_PORT'),
         # 'OPTIONS':{
         #     "init_command": "SET foreign_key_checks = 0;"
         # }
@@ -165,4 +165,3 @@ REST_FRAMEWORK = {
 SWAGGER_SETTINGS = {
     'DEFAULT_MODEL_RENDERING': 'example'
 }
-
