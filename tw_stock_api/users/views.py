@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer, UserSecretKeySerializer
@@ -7,6 +7,38 @@ import uuid
 import datetime
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from pydantic import BaseModel
+from rest_framework_simplejwt.tokens import RefreshToken
+from typing import Optional
+from rest_framework import exceptions
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.backends import TokenBackend
+
+
+class UserObj(BaseModel):
+    id: str
+    email: str
+    token: Optional[str] = None
+
+
+class ExampleAuthentication(JWTAuthentication):
+    def authenticate(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+        try:
+            valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+            user = Users.objects.filter(id=valid_data.get('user_id')).first()
+        except Exception:
+            raise exceptions.AuthenticationFailed('No such user')
+        return (user, None)
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 @api_view(['GET'])
@@ -43,8 +75,19 @@ def login(request):
     user = Users.objects.filter(email=request.data.get('email'), hashed_password=request.data.get('hashed_password'))
     if user:
         serializer = UserSerializer(user, many=True)
-        return Response(serializer.data)
+        user_obj = UserObj(**dict(serializer.data[0]))
+        tokens = get_tokens_for_user(user_obj)
+        user_obj.token = tokens.get('access')
+        return Response(dict(user_obj))
     return Response({'failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes((ExampleAuthentication, ))
+def test_jwt(request):
+    print(request.user.id)
+    return Response({'True'}, status=status.HTTP_200_OK)
+
 
 
 @swagger_auto_schema(method='post',
