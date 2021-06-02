@@ -88,10 +88,11 @@ export default {
       this.$api.auth.login(this.loginInfo).then(async (response) => {
         const { data } = response;
         toast.success('登入成功')
+        console.log(data)
         if (data.token) {
           this.SET_AUTH_TOKEN(data.token);
         }
-        window.location.href = '/';
+        // window.location.href = '/';
       }).catch(() => {
         toast.error('登入失敗')
       });
