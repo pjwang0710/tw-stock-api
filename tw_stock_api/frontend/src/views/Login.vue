@@ -87,12 +87,13 @@ export default {
     async login(){
       this.$api.auth.login(this.loginInfo).then(async (response) => {
         const { data } = response;
+        toast.success('登入成功')
         if (data.token) {
           this.SET_AUTH_TOKEN(data.token);
-          window.location.reload();
         }
-      }).catch((err) => {
-        toast.error(err)
+        window.location.href = '/';
+      }).catch(() => {
+        toast.error('登入失敗')
       });
     }
   }

@@ -3,12 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store';
 import api from './apis';
-import Toast from "vue-toastification";
+import Toast, {POSITION} from "vue-toastification";
+import "vue-toastification/dist/index.css";
 import "tailwindcss/tailwind.css"
 
 const options = {
-    confirmButtonColor: '#17A2B8',
-    cancelButtonColor: '#FF4F44',
+    position: POSITION.BOTTOM_RIGHT
 };
 const app = createApp(App)
 
