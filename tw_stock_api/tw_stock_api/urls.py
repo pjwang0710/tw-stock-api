@@ -29,8 +29,8 @@ schema_view = get_schema_view(
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
    ),
-   url='http://localhost:8000',
-#    url='http://appworks.octave.vip',
+#    url='http://localhost:8000',
+   url='https://appworks-api.octave.vip',
    public=True,
    permission_classes=[permissions.AllowAny],
 )
