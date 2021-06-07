@@ -10,31 +10,31 @@
                 <div class="grid grid-cols-6 gap-6">
                 <div class="col-span-6 sm:col-span-3">
                     <label for="first_name" class="block text-sm font-medium text-gray-700">First name</label>
-                    <input type="text" placeholder="First name" name="first_name" id="first_name" autocomplete="given-name" class="mt-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black-300 rounded-md">
+                    <input class="mt-2 appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="first_name" v-model="signupInfo.first_name" name="first_name" type="text" placeholder="Jane">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                     <label for="last_name" class="block text-sm font-medium text-gray-700">Last name</label>
-                    <input type="text" placeholder="Last name" name="last_name" id="last_name" autocomplete="family-name" class="mt-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black-300 rounded-md">
+                    <input class="mt-2 appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="last_name" v-model="signupInfo.last_name" name="last_name" type="text" placeholder="Doe">
                 </div>
 
-                <div class="col-span-6 sm:col-span-4">
+                <div class="col-span-6">
                     <label for="email_address" class="block text-sm font-medium text-gray-700">Email address</label>
-                    <input type="text" placeholder="email" name="email_address" id="email_address" autocomplete="email" class="mt-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black-400 rounded-md">
+                    <input class="mt-2 appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="email" v-model="signupInfo.email" name="email" type="text" placeholder="Email">
                 </div>
                 <div class="col-span-6 sm:col-span-3">
                     <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password1" id="password1" autocomplete="password" class="mt-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black-300 rounded-md">
+                    <input class="mt-2 appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="password1" v-model="password1" name="password1" type="password">
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
                     <label for="password2" class="block text-sm font-medium text-gray-700">Confirm password</label>
-                    <input type="password" name="password2" id="password2" autocomplete="password" class="mt-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black-300 rounded-md">
+                    <input class="mt-2 appearance-none block w-full text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="password2" v-model="password2" name="password2" type="password">
                 </div>
                 </div>
             </div>
             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="button" @click="signUp()"  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Submit
                 </button>
             </div>
@@ -49,11 +49,42 @@
 <script>
 // import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import LandingNav from "./LandingNav.vue";
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 export default {
   name: "LandingPage",
   components: {
     LandingNav,
+  },
+  data () {
+    return {
+      signupInfo: {
+        first_name: '',
+        last_name: '',
+        email: ''
+      },
+      password1: '',
+      password2: ''
+    }
+  },
+  methods: {
+    async signUp() {
+      if (this.password1 !== this.password2){
+        toast.error('兩次密碼不同')
+        return;
+      }
+      this.signupInfo.hashed_password = this.password1
+      this.$api.auth.signup(this.signupInfo).then(async (response) => {
+        const { data } = response;
+        toast.success('註冊成功')
+        console.log(data)
+        window.location.href = '/Login';
+      }).catch(() => {
+        toast.error('註冊失敗')
+      });
+    }
   }
 };
 </script>

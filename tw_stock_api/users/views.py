@@ -85,8 +85,7 @@ def login(request):
 @api_view(['POST'])
 @authentication_classes((ExampleAuthentication, ))
 def test_jwt(request):
-    print(request.user.id)
-    return Response({'True'}, status=status.HTTP_200_OK)
+    return Response({'userId': request.user.id}, status=status.HTTP_200_OK)
 
 
 

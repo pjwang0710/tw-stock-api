@@ -63,7 +63,10 @@
 // import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import LandingNav from './LandingNav.vue'
 import { useToast } from 'vue-toastification'
-import { mapMutations } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
+import { required } from '@vuelidate/validators'
+import { useVuelidate } from '@vuelidate/core'
+
 
 const toast = useToast()
 
@@ -80,19 +83,36 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState('auth', ['token']),
+  },
+  setup: () => ({ v$: useVuelidate() }),
+  validations () {
+    return {
+      loginInfo: {
+        email: { required },
+        hashed_password: { required }
+      }
+    }
+  },
   methods: {
     ...mapMutations('auth', [
       'SET_AUTH_TOKEN',
     ]),
     async login(){
+      if (this.v$.loginInfo.$invalid) {
+        console.log('登入資訊錯誤')
+        toast.error('登入資訊錯誤')
+        return;
+      }
       this.$api.auth.login(this.loginInfo).then(async (response) => {
         const { data } = response;
         toast.success('登入成功')
         console.log(data)
         if (data.token) {
           this.SET_AUTH_TOKEN(data.token);
+          window.location.href = '/Dashboard';
         }
-        // window.location.href = '/';
       }).catch(() => {
         toast.error('登入失敗')
       });
