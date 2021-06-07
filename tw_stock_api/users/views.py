@@ -57,8 +57,10 @@ def get_users(request):
 
 
 @api_view(['GET'])
-def get_user_detail(request, pk):
-    user = Users.objects.all().filter(id=pk)
+@authentication_classes((ExampleAuthentication, ))
+def get_user_detail(request):
+    user_id = request.user.id
+    user = Users.objects.all().filter(id=user_id)
     serializer = UserSerializer(user, many=True)
     return Response(serializer.data)
 
@@ -86,7 +88,6 @@ def login(request):
 @authentication_classes((ExampleAuthentication, ))
 def test_jwt(request):
     return Response({'userId': request.user.id}, status=status.HTTP_200_OK)
-
 
 
 @swagger_auto_schema(method='post',
@@ -117,8 +118,10 @@ def insert_user(request):
 
 
 @api_view(['POST'])
-def update_user(request, pk):
-    user = Users.objects.get(id=pk)
+@authentication_classes((ExampleAuthentication, ))
+def update_user(request):
+    user_id = request.user.id
+    user = Users.objects.get(id=user_id)
     serializer = UserSerializer(instance=user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -134,8 +137,10 @@ def delete_user(request, pk):
 
 
 @api_view(['GET'])
-def get_secret_key_detail(request, pk):
-    obj = UserSecretKeys.objects.all().filter(user_id=pk, is_valid=1)
+@authentication_classes((ExampleAuthentication, ))
+def get_secret_key_detail(request):
+    user_id = request.user.id
+    obj = UserSecretKeys.objects.all().filter(user_id=user_id, is_valid=1)
     if obj:
         serializer = UserSecretKeySerializer(obj, many=True)
         return Response(serializer.data)
@@ -143,10 +148,12 @@ def get_secret_key_detail(request, pk):
 
 
 @api_view(['POST'])
-def update_user_secret(request, pk):
-    user = Users.objects.get(id=pk)
+@authentication_classes((ExampleAuthentication, ))
+def update_user_secret(request):
+    user_id = request.user.id
+    user = Users.objects.get(id=user_id)
     if user:
-        secret_keys = UserSecretKeys.objects.all().filter(user_id=pk)
+        secret_keys = UserSecretKeys.objects.all().filter(user_id=user_id)
         instances = []
         for obj in secret_keys:
             obj.is_valid = False
@@ -156,7 +163,7 @@ def update_user_secret(request, pk):
 
         now = datetime.datetime.utcnow()
         data = {
-            'user': pk,
+            'user': user_id,
             'secret_key': str(uuid.uuid4()).replace('-', ''),
             'created_at': now,
             'year': now.year,
