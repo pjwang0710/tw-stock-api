@@ -140,6 +140,7 @@ def delete_user(request, pk):
 @authentication_classes((ExampleAuthentication, ))
 def get_secret_key_detail(request):
     user_id = request.user.id
+    print('user id', user_id)
     obj = UserSecretKeys.objects.all().filter(user_id=user_id, is_valid=1)
     if obj:
         serializer = UserSecretKeySerializer(obj, many=True)
