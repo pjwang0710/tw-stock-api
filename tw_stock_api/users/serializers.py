@@ -9,9 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSecretKeySerializer(serializers.ModelSerializer):
-
-    # user = serializers.PrimaryKeyRelatedField(queryset=Users.objects.all())
-
     class Meta:
         model = UserSecretKeys
         fields = '__all__'

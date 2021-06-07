@@ -12,5 +12,6 @@ urlpatterns = [
     path('update_user', views.update_user, name='update_user'),
     path('delete_user/<str:pk>', views.delete_user, name='delete_user'),
     path('update_secret_key', views.update_user_secret, name='update_secret_key'),
-    path('get_secret_key', views.get_secret_key_detail, name='get_secret_key')
+    path('get_secret_key', views.get_secret_key_detail, name='get_secret_key'),
+    path('get_api_use_count', views.get_api_use_count, name='get_api_use_count')
 ]

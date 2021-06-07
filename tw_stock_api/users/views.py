@@ -5,6 +5,7 @@ from .serializers import UserSerializer, UserSecretKeySerializer
 from .models import Users, UserSecretKeys
 import uuid
 import datetime
+from dateutil.relativedelta import relativedelta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from pydantic import BaseModel
@@ -13,6 +14,7 @@ from typing import Optional
 from rest_framework import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.backends import TokenBackend
+from django.db.models import Sum
 
 
 class UserObj(BaseModel):
@@ -179,3 +181,46 @@ def update_user_secret(request):
         return Response(serializer.data)
     else:
         return Response({'status': 'failed'})
+
+
+@api_view(['GET'])
+@authentication_classes((ExampleAuthentication, ))
+def get_api_use_count(request):
+    user_id = request.user.id
+    mapping = {
+        '1': 'Jan',
+        '2': 'Feb',
+        '3': 'Mar',
+        '4': 'Apr',
+        '5': 'May',
+        '6': 'Jun',
+        '7': 'Jul',
+        '8': 'Aug',
+        '9': 'Sep',
+        '10': 'Oct',
+        '11': 'Nov',
+        '12': 'Dec'
+    }
+    user = Users.objects.get(id=user_id)
+    now = datetime.datetime.utcnow()
+    mock_data = {}
+    for i in range(6, -1, -1):
+        year = (now - relativedelta(months=i)).year
+        month = (now - relativedelta(months=i)).month
+        mock_data[f'{year}_{month}'] = 0
+    output_labels = []
+    output_data = []
+    if user:
+        data = UserSecretKeys.objects.filter(user_id=user_id).values('user_id', 'year', 'month').annotate(total_count=Sum('count'))
+        for sub_data in data:
+            key = f'{sub_data["year"]}_{sub_data["month"]}'
+            if mock_data.get(key, None) is not None:
+                mock_data[key] = sub_data['total_count']
+        for year_month_key in mock_data.keys():
+            output_labels.append(mapping[year_month_key.split('_')[1]])
+            output_data.append(mock_data[year_month_key])
+        return Response({
+            'labels': output_labels,
+            'data': output_data
+        })
+    return Response({'status': 'failed'})
