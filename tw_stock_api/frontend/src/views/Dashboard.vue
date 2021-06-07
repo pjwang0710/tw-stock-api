@@ -11,8 +11,8 @@
                             <div class="rounded p-3 bg-green-600"><i class="fa fa-wallet fa-2x fa-fw fa-inverse"></i></div>
                         </div>
                         <div class="flex-1 text-right md:text-center">
-                            <h5 class="font-bold uppercase text-gray-500">Total Revenue</h5>
-                            <h3 class="font-bold text-3xl">$3249 <span class="text-green-500"><i class="fas fa-caret-up"></i></span></h3>
+                            <h5 class="font-bold uppercase text-gray-500">This month count</h5>
+                            <h3 class="font-bold text-3xl"> {{ this_month_use_count }} <span class="text-green-500"><i class="fas fa-caret-up"></i></span></h3>
                         </div>
                     </div>
                 </div>
@@ -25,8 +25,8 @@
                             <div class="rounded p-3 bg-pink-600"><i class="fas fa-users fa-2x fa-fw fa-inverse"></i></div>
                         </div>
                         <div class="flex-1 text-right md:text-center">
-                            <h5 class="font-bold uppercase text-gray-500">Total Users</h5>
-                            <h3 class="font-bold text-3xl">249 <span class="text-pink-500"><i class="fas fa-exchange-alt"></i></span></h3>
+                            <h5 class="font-bold uppercase text-gray-500">Last month count</h5>
+                            <h3 class="font-bold text-3xl">{{ last_month_use_count }} <span class="text-pink-500"><i class="fas fa-exchange-alt"></i></span></h3>
                         </div>
                     </div>
                 </div>
@@ -40,8 +40,8 @@
                             <div class="rounded p-3 bg-yellow-600"><i class="fas fa-user-plus fa-2x fa-fw fa-inverse"></i></div>
                         </div>
                         <div class="flex-1 text-right md:text-center">
-                            <h5 class="font-bold uppercase text-gray-500">New Users</h5>
-                            <h3 class="font-bold text-3xl">2 <span class="text-yellow-600"><i class="fas fa-caret-up"></i></span></h3>
+                            <h5 class="font-bold uppercase text-gray-500">Total count</h5>
+                            <h3 class="font-bold text-3xl">{{ total_count}} <span class="text-yellow-600"><i class="fas fa-caret-up"></i></span></h3>
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="flex flex-wrap">
-            <div class="w-1/2 p-3">
+            <div class="w-full p-3">
                 <!--Graph Card-->
                 <div class="bg-white border rounded shadow">
                     <div class="border-b p-3">
@@ -60,8 +60,7 @@
                     </div>
                 </div>
             </div>
-            <div class="w-1/2 p-3">
-                <!--Graph Card-->
+            <!-- <div class="w-1/2 p-3">
                 <div class="bg-white border rounded shadow">
                     <div class="border-b p-3">
                         <h5 class="font-bold uppercase text-gray-600">Graph</h5>
@@ -70,7 +69,7 @@
                         <BarChart />
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </main>
   </div>
@@ -81,23 +80,37 @@
 import Sidebar from './Sidebar.vue'
 import Header from './Header.vue'
 import AreaChart from "../components/AreaChart.vue";
-import BarChart from "../components/BarChart.vue";
-// import { useToast } from 'vue-toastification'
+// import BarChart from "../components/BarChart.vue";
 
-// const toast = useToast()
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+
 
 export default {
   name: 'Dashboard',
   components: {
     Sidebar,
     Header,
-    AreaChart,
-    BarChart
+    AreaChart
   },
   data() {
     return {
-      
+      this_month_use_count: 0,
+      last_month_use_count: 0,
+      total_count: 0
     }
+  },
+  mounted() {
+    this.$api.auth.getApiUseCount().then(async (response) => {
+      const { data } = response;
+      this.this_month_use_count = data.data[data.data.length-1];
+      this.last_month_use_count = data.data[data.data.length-2];
+      this.total_count = data.data.reduce((a, b) => a + b, 0);
+      console.log(data);
+      }).catch(() => {
+            toast.error('不明錯誤')
+    });
   }
 }
 </script>
