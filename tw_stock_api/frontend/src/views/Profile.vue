@@ -96,6 +96,7 @@ export default {
             console.log(data)
             this.secret_key = data.secret_key;
             this.display = '更新'
+            toast.success('更新成功')
         }).catch(() => {
             toast.error('不明錯誤')
         });
@@ -104,6 +105,7 @@ export default {
         this.$api.auth.updateDetails(this.userInfo).then(async (response) => {
             const { data } = response;
             console.log(data)
+            toast.success('更新成功')
             window.location.reload();
         }).catch(() => {
             toast.error('不明錯誤')
