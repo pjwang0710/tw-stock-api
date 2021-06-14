@@ -6,6 +6,7 @@ import Login from '../views/Login.vue';
 import SignUp from '../views/SignUp.vue';
 import Dashboard from '../views/Dashboard.vue';
 import Profile from '../views/Profile.vue';
+import APIDocument from '../views/LandingAPI.vue'
 // import Invitation from '../views/Invitation.vue';
 // import TraineeDashboard from '../views/TraineeDashboard.vue';
 // import FirstReviewTask from '../views/FirstReviewTask.vue';
@@ -33,6 +34,11 @@ const routes = [
     name: 'Dashboard',
     component: Dashboard,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/api',
+    name: 'APIDocument',
+    component: APIDocument
   },
   {
     path: '/profile',
